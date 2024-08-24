@@ -1,0 +1,128 @@
+openapi: 3.0.3
+info:
+  title: Attendance API
+  description: API for handling attendance-related operations.
+  version: 1.0.0
+paths:
+  /attendance:
+    post:
+      summary: Create an attendance record
+      description: This endpoint is used to create an attendance record.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                attendanceType:
+                  type: string
+                  example: "CLOCK_IN"
+                  description: Type of attendance action.
+                userInput:
+                  type: string
+                  example: "string"
+                  description: User input data.
+                workspaceCode:
+                  type: string
+                  example: "string"
+                  description: Workspace code.
+                shiftCode:
+                  type: string
+                  example: "string"
+                  description: Shift code.
+                topic:
+                  type: string
+                  example: "string"
+                  description: Topic related to the attendance.
+                fingerPrintTemplate:
+                  type: string
+                  example: "string"
+                  description: Fingerprint template data.
+                propDictionary:
+                  type: object
+                  additionalProperties: true
+                  description: Additional properties for the request.
+                requestAddon:
+                  type: object
+                  properties:
+                    username:
+                      type: string
+                      example: "string"
+                      description: Username of the requester.
+                    userId:
+                      type: string
+                      example: "string"
+                      description: User ID of the requester.
+                    securityRole:
+                      type: string
+                      example: "string"
+                      description: Security role of the requester.
+                    userDbId:
+                      type: integer
+                      example: 0
+                      description: Database ID of the user.
+                    customerId:
+                      type: integer
+                      example: 0
+                      description: Customer ID.
+                    requestId:
+                      type: string
+                      example: "string"
+                      description: Unique request ID.
+                    clientIpAddress:
+                      type: string
+                      example: "string"
+                      description: IP address of the client.
+                    mobile:
+                      type: boolean
+                      example: true
+                      description: Indicates if the request is made from a mobile device.
+                    customerCode:
+                      type: string
+                      example: "string"
+                      description: Customer code.
+                    fullName:
+                      type: string
+                      example: "string"
+                      description: Full name of the user.
+                punchRequest:
+                  type: boolean
+                  example: true
+                  description: Indicates if this is a punch request.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                    example: "1.0"
+                    description: Version of the API response.
+                  code:
+                    type: string
+                    example: "SUCCESS"
+                    description: Response code indicating the result.
+                  errorCode:
+                    type: integer
+                    example: 0
+                    description: Error code, if any (0 for no error).
+                  timestamp:
+                    type: integer
+                    example: 1627847284
+                    description: Timestamp of the response.
+                  data:
+                    type: string
+                    example: "Attendance recorded successfully."
+                    description: Additional data related to the attendance record.
+                  message:
+                    type: object
+                    description: Additional message information, if any.
+                    additionalProperties: true
+        '400':
+          description: Invalid request
+        '500':
+          description: Internal server error
