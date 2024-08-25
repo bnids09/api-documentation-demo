@@ -1,128 +1,477 @@
-openapi: 3.0.3
+openapi: 3.0.1
 info:
-  title: Attendance API
-  description: API for handling attendance-related operations.
+  title: Employee Management API
+  description: |
+    Welcome to the Employee Management API reference! This API provides operations for managing employee records and their roles in your system.
+    The base URL path for endpoints in the Employee Management API is: {server}/api/v1.
+
+    Replace {server} with the hostname of your instance. For example, if you are using the hosted version, your {server} could be https://apiDocumentationDemo.com.
   version: 1.0.0
+
+servers:
+  - url: https://{server}/api/v1
+    description: Employee Management API Server
+    variables:
+      server:
+        default: "apiDocumentationDemo.com"
+
+security:
+  - api_key: []
+  - client_certificate: []
+
+tags:
+  - name: Staff Details
+    description: API endpoints for managing employee details.
+  - name: Staff Roles
+    description: API endpoints for managing employee roles.
+
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: x-api-key
+      in: header
+      description: >
+        API token-based authentication. Include the custom HTTP header `x-api-key` in your request. Use one of these values:
+        
+        - API token belonging to an administrator
+        - Service user token ID
+    client_certificate:
+      type: http
+      scheme: bearer
+      description: >
+        To authenticate with a client authentication certificate, present a trusted certificate in your request.
+
+  schemas:
+    # Schema: Staff Details
+    StaffDetails:
+      type: object
+      properties:
+        accountId:
+          type: string
+          description: "The unique identifier for the employee."
+        fullName:
+          type: string
+          description: "The full name of the employee."
+        identityCardNumber:
+          type: string
+          description: "The identity card number of the employee."
+        enrollmentDate:
+          type: string
+          format: date
+          description: "The date the employee joined."
+        roleCode:
+          type: string
+          description: "The designation code for the employee."
+        employmentStatus:
+          type: string
+          description: "The employment status code."
+        officeLocationCode:
+          type: string
+          description: "The workspace code where the employee is assigned."
+        originSource:
+          type: string
+          description: "Source of data origin."
+          example: "OWM"
+        contactEmail:
+          type: string
+          description: "The employee's email address."
+        mobileNumber:
+          type: string
+          description: "The employee's mobile number."
+        landlineNumber:
+          type: string
+          description: "The employee's home or landline number."
+        residentialAddress:
+          type: string
+          description: "The employee's home address."
+        sex:
+          type: string
+          enum: 
+            - MALE
+            - FEMALE
+            - OTHER
+          description: "The employee's gender."
+        birthDate:
+          type: string
+          format: date
+          description: "The employee's date of birth."
+        ethnicityCode:
+          type: string
+          description: "The code representing the employee's race."
+        faithCode:
+          type: string
+          description: "The code representing the employee's religion."
+        citizenshipCode:
+          type: string
+          description: "The code representing the employee's nationality."
+        relationshipStatus:
+          type: string
+          description: "The code representing the employee's marital status."
+        spokenLanguages:
+          type: array
+          items:
+            type: string
+          description: "List of codes representing the languages spoken by the employee."
+
+    ApiResponse:
+      type: object
+      properties:
+        version:
+          type: string
+          description: "The version of the API response."
+        code:
+          type: string
+          description: "A code representing the result of the operation."
+        errorCode:
+          type: integer
+          description: "An error code associated with the operation result."
+        timestamp:
+          type: integer
+          description: "The timestamp of the response in Unix epoch format."
+        data:
+          type: object
+          description: "The response data payload, specific to the operation."
+        message:
+          type: object
+          description: "Additional messages or metadata related to the response."
+    
+    ErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+              message:
+                type: string
+
+    # Schema: Staff Roles
+    StaffRoles:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              staffUserId:
+                type: string
+                description: "The unique identifier for the staff user."
+              code:
+                type: string
+                description: "The role code assigned to the employee."
+              startDate:
+                type: string
+                format: date
+                description: "The start date for the role assignment."
+              endDate:
+                type: string
+                format: date
+                description: "The end date for the role assignment."
+
+    RoleResponse:
+      type: object
+      properties:
+        results:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              messages:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    status:
+                      type: string
+                      description: "The status of the message, e.g., ERROR."
+                    code:
+                      type: string
+                      description: "A specific code associated with the message."
+                    errorCode:
+                      type: integer
+                      description: "An error code associated with the message."
+                    message:
+                      type: string
+                      description: "Detailed message text."
+              data:
+                type: object
+                description: "Additional data related to the result."
+              errorMessage:
+                type: string
+                description: "Error message if there was an issue."
+              errorCode:
+                type: integer
+                description: "Error code if there was an issue."
+              status:
+                type: string
+                description: "Overall status for the result object."
+        version:
+          type: string
+          description: "The version of the API response."
+        timestamp:
+          type: string
+          format: date-time
+          description: "The timestamp of the response in ISO 8601 format."
+
 paths:
-  /attendance:
+  # Section: Staff Details Endpoints
+  /employee:
     post:
-      summary: Create an attendance record
-      description: This endpoint is used to create an attendance record.
+      tags:
+        - Staff Details
+      summary: Create a new employee
+      description: Adds a new employee to the system.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                attendanceType:
-                  type: string
-                  example: "CLOCK_IN"
-                  description: Type of attendance action.
-                userInput:
-                  type: string
-                  example: "string"
-                  description: User input data.
-                workspaceCode:
-                  type: string
-                  example: "string"
-                  description: Workspace code.
-                shiftCode:
-                  type: string
-                  example: "string"
-                  description: Shift code.
-                topic:
-                  type: string
-                  example: "string"
-                  description: Topic related to the attendance.
-                fingerPrintTemplate:
-                  type: string
-                  example: "string"
-                  description: Fingerprint template data.
-                propDictionary:
-                  type: object
-                  additionalProperties: true
-                  description: Additional properties for the request.
-                requestAddon:
-                  type: object
-                  properties:
-                    username:
-                      type: string
-                      example: "string"
-                      description: Username of the requester.
-                    userId:
-                      type: string
-                      example: "string"
-                      description: User ID of the requester.
-                    securityRole:
-                      type: string
-                      example: "string"
-                      description: Security role of the requester.
-                    userDbId:
-                      type: integer
-                      example: 0
-                      description: Database ID of the user.
-                    customerId:
-                      type: integer
-                      example: 0
-                      description: Customer ID.
-                    requestId:
-                      type: string
-                      example: "string"
-                      description: Unique request ID.
-                    clientIpAddress:
-                      type: string
-                      example: "string"
-                      description: IP address of the client.
-                    mobile:
-                      type: boolean
-                      example: true
-                      description: Indicates if the request is made from a mobile device.
-                    customerCode:
-                      type: string
-                      example: "string"
-                      description: Customer code.
-                    fullName:
-                      type: string
-                      example: "string"
-                      description: Full name of the user.
-                punchRequest:
-                  type: boolean
-                  example: true
-                  description: Indicates if this is a punch request.
+              $ref: '#/components/schemas/StaffDetails'
       responses:
         '200':
-          description: Successful operation
+          description: Successfully created a new employee.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  version:
-                    type: string
-                    example: "1.0"
-                    description: Version of the API response.
-                  code:
-                    type: string
-                    example: "SUCCESS"
-                    description: Response code indicating the result.
-                  errorCode:
-                    type: integer
-                    example: 0
-                    description: Error code, if any (0 for no error).
-                  timestamp:
-                    type: integer
-                    example: 1627847284
-                    description: Timestamp of the response.
-                  data:
-                    type: string
-                    example: "Attendance recorded successfully."
-                    description: Additional data related to the attendance record.
-                  message:
-                    type: object
-                    description: Additional message information, if any.
-                    additionalProperties: true
+                $ref: '#/components/schemas/ApiResponse'
         '400':
-          description: Invalid request
+          description: Invalid input, object invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: Internal server error
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /employee/{id}:
+    get:
+      tags:
+        - Staff Details
+      summary: Get employee details
+      description: Retrieves details of an employee by their ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved employee details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          description: Employee not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Staff Details
+      summary: Update an existing employee
+      description: Updates an existing employee's details.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffDetails'
+      responses:
+        '200':
+          description: Successfully updated employee details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid input, object invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Employee not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Staff Details
+      summary: Delete an employee
+      description: Deletes an employee by their ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Employee successfully deleted.
+        '404':
+          description: Employee not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # Section: Staff Roles Endpoints
+  /employee/role:
+    post:
+      tags:
+        - Staff Roles
+      summary: Assign roles to employees
+      description: Adds or assigns roles to employees in the system.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffRoles'
+      responses:
+        '200':
+          description: Successfully assigned roles.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleResponse'
+        '400':
+          description: Invalid input, object invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - Staff Roles
+      summary: Get assigned roles
+      description: Retrieves assigned roles for employees in the system.
+      responses:
+        '200':
+          description: Successfully retrieved roles.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleResponse'
+        '404':
+          description: No roles found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Staff Roles
+      summary: Update assigned roles
+      description: Updates assigned roles for employees in the system.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffRoles'
+      responses:
+        '200':
+          description: Successfully updated roles.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleResponse'
+        '400':
+          description: Invalid input, object invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Roles not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Staff Roles
+      summary: Delete assigned roles
+      description: Deletes assigned roles for employees by their IDs.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successfully deleted assigned roles.
+        '404':
+          description: Roles not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
