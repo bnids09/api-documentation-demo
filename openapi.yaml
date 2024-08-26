@@ -177,6 +177,32 @@ components:
                 format: date
                 description: "The end date for the role assignment."
 
+    UpdateStaffRolesRequest:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: "The unique identifier for the role assignment."
+              staffUserId:
+                type: string
+                description: "The unique identifier for the staff user."
+              code:
+                type: string
+                description: "The role code assigned to the employee."
+              startDate:
+                type: string
+                format: date
+                description: "The start date for the role assignment."
+              endDate:
+                type: string
+                format: date
+                description: "The end date for the role assignment."
+    
     RoleResponse:
       type: object
       properties:
@@ -384,6 +410,102 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Employee not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Staff Roles
+      summary: Update roles for an employee
+      description: Updates roles assigned to an employee.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStaffRolesRequest'
+      responses:
+        '200':
+          description: Successfully updated roles for the employee.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleResponse'
+        '400':
+          description: Invalid input, object invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Employee not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /employee/roles/{id}:
+    get:
+      tags:
+        - Staff Roles
+      summary: Get roles for an employee
+      description: Retrieves roles assigned to a specific employee by their ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved roles for the employee.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleResponse'
+        '404':
+          description: Employee not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Staff Roles
+      summary: Delete roles for an employee
+      description: Deletes roles assigned to a specific employee by their ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successfully removed roles for the employee.
         '404':
           description: Employee not found.
           content:
