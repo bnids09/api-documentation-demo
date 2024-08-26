@@ -24,6 +24,8 @@ tags:
     description: API endpoints for managing employee details.
   - name: Staff Roles
     description: API endpoints for managing employee roles.
+  - name: Staff Access
+    description: API endpoints for managing employee access roles.
 
 components:
   securitySchemes:
@@ -47,68 +49,68 @@ components:
     StaffDetails:
       type: object
       properties:
-        accountId:
+        employeeId:
           type: string
           description: "The unique identifier for the employee."
-        fullName:
+        name:
           type: string
           description: "The full name of the employee."
-        identityCardNumber:
+        idCard:
           type: string
           description: "The identity card number of the employee."
-        enrollmentDate:
+        joiningDate:
           type: string
           format: date
           description: "The date the employee joined."
-        roleCode:
+        positionCode:
           type: string
           description: "The designation code for the employee."
-        employmentStatus:
+        statusCode:
           type: string
           description: "The employment status code."
-        officeLocationCode:
+        workspaceCode:
           type: string
           description: "The workspace code where the employee is assigned."
-        originSource:
+        dataSource:
           type: string
           description: "Source of data origin."
           example: "OWM"
-        contactEmail:
+        email:
           type: string
           description: "The employee's email address."
-        mobileNumber:
+        mobile:
           type: string
           description: "The employee's mobile number."
-        landlineNumber:
+        landline:
           type: string
           description: "The employee's home or landline number."
-        residentialAddress:
+        address:
           type: string
           description: "The employee's home address."
-        sex:
+        gender:
           type: string
           enum: 
             - MALE
             - FEMALE
             - OTHER
           description: "The employee's gender."
-        birthDate:
+        dateOfBirth:
           type: string
           format: date
           description: "The employee's date of birth."
-        ethnicityCode:
+        raceCode:
           type: string
           description: "The code representing the employee's race."
-        faithCode:
+        religionCode:
           type: string
           description: "The code representing the employee's religion."
-        citizenshipCode:
+        nationalityCode:
           type: string
           description: "The code representing the employee's nationality."
-        relationshipStatus:
+        maritalStatusCode:
           type: string
           description: "The code representing the employee's marital status."
-        spokenLanguages:
+        languagesSpoken:
           type: array
           items:
             type: string
@@ -146,29 +148,31 @@ components:
             properties:
               code:
                 type: string
+                description: "Error code representing the type of error."
               message:
                 type: string
+                description: "Detailed message describing the error."
 
     # Schema: Staff Roles
     StaffRoles:
       type: object
       properties:
-        items:
+        roles:
           type: array
           items:
             type: object
             properties:
-              staffUserId:
+              userId:
                 type: string
                 description: "The unique identifier for the staff user."
-              code:
+              roleIdentifier:
                 type: string
                 description: "The role code assigned to the employee."
-              startDate:
+              assignmentStartDate:
                 type: string
                 format: date
                 description: "The start date for the role assignment."
-              endDate:
+              assignmentEndDate:
                 type: string
                 format: date
                 description: "The end date for the role assignment."
@@ -331,7 +335,7 @@ paths:
       tags:
         - Staff Details
       summary: Delete an employee
-      description: Deletes an employee by their ID.
+      description: Deletes an employee from the system.
       parameters:
         - name: id
           in: path
@@ -340,7 +344,7 @@ paths:
             type: string
       responses:
         '204':
-          description: Employee successfully deleted.
+          description: Successfully deleted the employee.
         '404':
           description: Employee not found.
           content:
@@ -355,12 +359,12 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
   # Section: Staff Roles Endpoints
-  /employee/role:
+  /employee/roles:
     post:
       tags:
         - Staff Roles
-      summary: Assign roles to employees
-      description: Adds or assigns roles to employees in the system.
+      summary: Assign a role to an employee
+      description: Assigns a role to an employee.
       requestBody:
         required: true
         content:
@@ -369,13 +373,19 @@ paths:
               $ref: '#/components/schemas/StaffRoles'
       responses:
         '200':
-          description: Successfully assigned roles.
+          description: Successfully assigned the role to the employee.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RoleResponse'
         '400':
           description: Invalid input, object invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Employee not found.
           content:
             application/json:
               schema:
@@ -387,20 +397,86 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-    get:
+  # Section: Staff Access Endpoints
+  /employee/access:
+    post:
       tags:
-        - Staff Roles
-      summary: Get assigned roles
-      description: Retrieves assigned roles for employees in the system.
+        - Staff Access
+      summary: Assign access to an employee
+      description: Assigns system access to an employee.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: "The unique identifier for the employee."
+                permissions:
+                  type: array
+                  items:
+                    type: string
+                  description: "List of permissions to assign."
+                valid_from:
+                  type: string
+                  format: date
+                  description: "Start date for access validity."
+                valid_until:
+                  type: string
+                  format: date
+                  description: "End date for access validity."
+              required:
+                - id
+                - permissions
       responses:
         '200':
-          description: Successfully retrieved roles.
+          description: Successfully assigned access.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RoleResponse'
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid input, object invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: No roles found.
+          description: Employee not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /employee/access/{id}:
+    get:
+      tags:
+        - Staff Access
+      summary: Get access details for an employee
+      description: Retrieves the access details for a specific employee by their ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved access details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          description: Employee not found.
           content:
             application/json:
               schema:
@@ -414,22 +490,44 @@ paths:
 
     put:
       tags:
-        - Staff Roles
-      summary: Update assigned roles
-      description: Updates assigned roles for employees in the system.
+        - Staff Access
+      summary: Update access details for an employee
+      description: Updates the access details for a specific employee by their ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StaffRoles'
+              type: object
+              properties:
+                permissions:
+                  type: array
+                  items:
+                    type: string
+                  description: "List of permissions to update."
+                valid_from:
+                  type: string
+                  format: date
+                  description: "Start date for access validity."
+                valid_until:
+                  type: string
+                  format: date
+                  description: "End date for access validity."
+              required:
+                - permissions
       responses:
         '200':
-          description: Successfully updated roles.
+          description: Successfully updated access details.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RoleResponse'
+                $ref: '#/components/schemas/ApiResponse'
         '400':
           description: Invalid input, object invalid.
           content:
@@ -437,7 +535,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Roles not found.
+          description: Employee not found.
           content:
             application/json:
               schema:
@@ -451,9 +549,9 @@ paths:
 
     delete:
       tags:
-        - Staff Roles
-      summary: Delete assigned roles
-      description: Deletes assigned roles for employees by their IDs.
+        - Staff Access
+      summary: Remove access for an employee
+      description: Deletes the access assigned to a specific employee by their ID.
       parameters:
         - name: id
           in: path
@@ -462,9 +560,9 @@ paths:
             type: string
       responses:
         '204':
-          description: Successfully deleted assigned roles.
+          description: Successfully removed access for the employee.
         '404':
-          description: Roles not found.
+          description: Employee not found.
           content:
             application/json:
               schema:
