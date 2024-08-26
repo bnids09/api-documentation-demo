@@ -1,8 +1,9 @@
 openapi: 3.0.1
 info:
   title: Employee Management API
+  version: 1.0.0
   description: |
-        # Welcome to the Employee Management API
+    # Welcome to the Employee Management API
     
     The Employee Management API provides operations for managing employee records and their roles in your system.
 
@@ -31,7 +32,8 @@ info:
         POST
         PUT
         DELETE
-  version: 1.0.0
+
+
 
 servers:
   - url: https://{server}/api/v1
