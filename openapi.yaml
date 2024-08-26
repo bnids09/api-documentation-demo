@@ -2,10 +2,35 @@ openapi: 3.0.1
 info:
   title: Employee Management API
   description: |
-    Welcome to the Employee Management API reference! This API provides operations for managing employee records and their roles in your system.
-    The base URL path for endpoints in the Employee Management API is: {server}/api/v1.
+        # Welcome to the Employee Management API
+    
+    The Employee Management API provides operations for managing employee records and their roles in your system.
 
-    Replace {server} with the hostname of your instance. For example, if you are using the hosted version, your {server} could be https://apiDocumentationDemo.com.
+    ## Base URL
+
+    The base URL path for endpoints in the Employee Management API is: `{server}/api/v1`.
+
+    Replace `{server}` with the hostname of your instance. For example, if you are using the hosted version, your `{server}` could be `https://apiDocumentationDemo.com`.
+
+    ## Authentication
+
+    API clients can authenticate requests using the following methods:
+
+    - **API Key**: Include an `x-api-key` header with your request.
+    - **Client Certificate**: Use client certificate-based authentication if required.
+
+    ## Contact Information
+
+    For more details and support, please contact our support team.
+    
+    ## Method
+
+     The Employee Management API uses these standard HTTP methods:
+
+        GET
+        POST
+        PUT
+        DELETE
   version: 1.0.0
 
 servers:
